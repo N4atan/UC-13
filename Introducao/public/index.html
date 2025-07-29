@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>UC13-Back-end (Test)</title>
+	</head>
+	<body>
+		<form action="" id="form-register">
+			<h1>Register</h1>
+
+			<label for="nome">Nome:</label>
+			<input type="text" name="nome" id="inpNome" />
+
+			<label for="idade">Sua Idade</label>
+			<input type="number" name="idade" id="inpIdade" />
+
+			<button type="submit">Registrar</button>
+			<button type="reset">Clear</button>
+		</form>
+
+		<div id="container-dados">
+			<button id="attLista">Atualizar Lista</button>
+			<ul id="listaUsuarios"></ul>
+		</div>
+
+		<script>
+			document
+				.getElementById("form-register")
+				.addEventListener("submit", async (e) => {
+					e.preventDefault();
+
+					const body = {
+						name: document.getElementById("inpNome").value,
+						idade: document.getElementById("inpIdade").value,
+					};
+
+					const response = await fetch(
+						"http://localhost:3000/registerUser",
+						{
+							method: "POST",
+							headers: {
+								"User-Agent": "undici-stream-example",
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify(body),
+						}
+					);
+
+					const data = await response.json();
+					alert(data);
+                    attLista();
+				});
+
+			async function attLista() {
+				const response = await fetch("http://localhost:3000/users");
+
+				const data = await response.json();
+
+				console.log(data);
+
+				document.getElementById("listaUsuarios").innerHTML = "";
+
+				for (let u of data) {
+					let li = document.createElement("li");
+					li.textContent = u.name;
+					document.getElementById("listaUsuarios").appendChild(li);
+				}
+			}
+
+			document
+				.getElementById("attLista")
+				.addEventListener("click", async () => {attLista()});
+		</script>
+	</body>
+</html>
