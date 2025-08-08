@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { connection } from '../database/connection';
 import { ResultSetHeader } from 'mysql2';
 import Box from '../models/Box';
+import Pokemon from '../models/Pokemon';
 
 export default class BoxController {
     async create(req: Request, res: Response): Promise<Response> {
@@ -12,7 +13,7 @@ export default class BoxController {
         let entityBox = new Box(nome, treinador);
 
         try {
-            const [ result , field ] = await connection.query<ResultSetHeader>(
+            const [ result ] = await connection.query<ResultSetHeader>(
                 'INSERT INTO pc (nome_box, treinador_dono) VALUES (? ?)',
                 [ nome , treinador ]
             )
@@ -25,9 +26,10 @@ export default class BoxController {
             console.groupEnd();
 
             return res.status(201).json({
-                info: `Box criada com sucesso: ID: ${entityBox.id} | Box-Name: ${entityBox.nome} | Dono: ${entityBox.treinador}`
+                info: `Box criada com sucesso!`,
+                content: entityBox
             })
-            
+
         } catch (e) {
             console.error(e);
             return res.status(500).json({
@@ -46,7 +48,7 @@ export default class BoxController {
             console.groupEnd();
 
             return res.status(200).json({
-                conteudo: rows 
+                rows
             })
 
         } catch (e) {
@@ -73,7 +75,11 @@ export default class BoxController {
                 console.table(row);
             console.groupEnd();
 
-            if(row.length == 0) { return res.status(404).json({ mensagem: 'Box não encontrada!' }); }
+            if(row.length == 0) { 
+                return res.status(404).json({
+                    info: 'Box não encontrada!'
+                });
+            }
 
             return res.status(200).json(row[0]);
         } catch (e) {
