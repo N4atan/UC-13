@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { connection } from '../database/connection';
 import { ResultSetHeader } from 'mysql2';
 import Box from '../models/Box';
-import Pokemon from '../models/Pokemon';
+
 
 export default class BoxController {
     async create(req: Request, res: Response): Promise<Response> {
@@ -40,16 +40,14 @@ export default class BoxController {
 
     async list(req: Request, res: Response): Promise<Response> {
         try {
-            const  rows = await connection.query('SELECT * FROM pc');
+            const  [ rows ] = await connection.query('SELECT * FROM pc');
 
             console.group();
                 console.info(`Retorno de registros do banco:`);
                 console.table(rows);
             console.groupEnd();
 
-            return res.status(200).json({
-                rows
-            })
+            return res.status(201).json(rows)
 
         } catch (e) {
             console.error(e);
